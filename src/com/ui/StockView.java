@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.JButton;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTextPane;
+import javax.swing.JComboBox;
+import javax.swing.JSpinner;
+import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
+
 
 
 public class StockView {
@@ -59,7 +67,7 @@ public class StockView {
 	 */
 	private void initialize() {
 		frame =  new JFrame();
-		frame.setBounds(100, 100, 820, 715);
+		frame.setBounds(100, 100, 980, 715);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -225,10 +233,45 @@ public class StockView {
 		String[] Names={"股票代码","股票简称","涨跌幅","现价","市盈率","预测市盈率","市净率"};
 		//frame.getContentPane().add(sp);
 		
-		table = new JTable(Info,Names);
-		//JScrollPane sp = new JScrollPane(table);
+	    table = new JTable(Info,Names);
+
 		table.setBounds(152, 54, 631, 550);
-		//table.setPreferredScrollableViewportSize(new Dimension(550,30));
+		
 		frame.getContentPane().add(table);
+		
+		
+		JLabel lblNewLabel = new JLabel("\u6536\u85CF");
+		lblNewLabel.setForeground(Color.DARK_GRAY);
+		lblNewLabel.setFont(new Font("宋体", Font.PLAIN, 14));
+		lblNewLabel.setBounds(856, 29, 54, 15);
+		frame.getContentPane().add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("\u80A1\u7968\u4EE3\u7801");
+		lblNewLabel_1.setBounds(165, 29, 54, 15);
+		frame.getContentPane().add(lblNewLabel_1);
+		
+		JLabel label_5 = new JLabel("\u80A1\u7968\u7B80\u79F0");
+		label_5.setBounds(260, 29, 54, 15);
+		frame.getContentPane().add(label_5);
+		
+		JLabel label_6 = new JLabel("\u6DA8\u8DCC\u5E45");
+		label_6.setBounds(347, 29, 54, 15);
+		frame.getContentPane().add(label_6);
+		
+		JLabel label_7 = new JLabel("\u73B0\u4EF7");
+		label_7.setBounds(448, 29, 54, 15);
+		frame.getContentPane().add(label_7);
+		
+		JLabel label_8 = new JLabel("\u5E02\u76C8\u7387");
+		label_8.setBounds(530, 29, 54, 15);
+		frame.getContentPane().add(label_8);
+		
+		JLabel label_9 = new JLabel("\u9884\u6D4B\u5E02\u76C8\u7387");
+		label_9.setBounds(614, 29, 73, 15);
+		frame.getContentPane().add(label_9);
+		
+		JLabel label_10 = new JLabel("\u5E02\u51C0\u7387");
+		label_10.setBounds(709, 29, 54, 15);
+		frame.getContentPane().add(label_10);
 	}
 }
