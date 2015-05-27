@@ -3,33 +3,45 @@ package com.ui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JLabel;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-
 import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+
+import java.awt.Font;
+
+import javax.swing.SwingConstants;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Vector;
+
 import javax.swing.JButton;
 
 
 public class StockView {
 
 	private JFrame frame;
-	private JTextField mintextField1;
-	private JTextField maxtextField1;
-	private JTextField mintextField2;
-	private JTextField maxtextField2;
-	private JTextField mintextField3;
-	private JTextField maxtextField3;
-	private JTextField mintextField4;
-	private JTextField maxtextField4;
-	private JTextField mintextField5;
-	private JTextField maxtextField5;
-	private JTable table;
+	private JTextField[] MintextField = new JTextField[5];
+	private JTextField[] MaxtextFied = new JTextField[5];
+	private JLabel[] JMin = new JLabel[5];
+	private JLabel[] JMax = new JLabel[5];
+	private JButton resetBtn,searchBtn;
+	private JLabel lstocknum;
+	
+	private createTable table;
+	//Vector<String> searchBase = new Vector<String>();
+	String[][] stockData = new String[3000][9];
+	int total;
+	Vector<Double> MaxMin = new Vector<Double>();
+	MouseHandler handler = new MouseHandler();
 
 	/**
 	 * Launch the application.
@@ -38,8 +50,17 @@ public class StockView {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					
+					//dialog = new Dialog();
+					//dialog.setVisible(true);
+					//progressBar =  new ProgressBar();//创建进度条
+		           
+
 					StockView window = new StockView();
 					window.frame.setVisible(true);
+					
+					//progressBar.stopThread();
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,6 +72,7 @@ public class StockView {
 	 * Create the application.
 	 */
 	public StockView() {
+		
 		initialize();
 	}
 
@@ -58,177 +80,268 @@ public class StockView {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame =  new JFrame();
-		frame.setBounds(100, 100, 820, 715);
+		frame = new JFrame();
+		frame.setBounds(100, 100, 880, 628);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JLabel Selectlabel = new JLabel("\u6761\u4EF6\u8BBE\u7F6E");
-		Selectlabel.setFont(new Font("宋体", Font.PLAIN, 14));
-		Selectlabel.setForeground(Color.DARK_GRAY);
-		Selectlabel.setBounds(10, 10, 73, 15);
-		frame.getContentPane().add(Selectlabel);
+		JPanel panelSet = new JPanel();
+		panelSet.setBounds(10, 10, 221, 518);
+		frame.getContentPane().add(panelSet);
+		panelSet.setLayout(null);
 		
-		JCheckBox checkBox = new JCheckBox("\u6DA8\u8DCC\u5E45\u5EA6");
-		checkBox.setBounds(10, 50, 103, 23);
-		frame.getContentPane().add(checkBox);
+		JLabel lChoose = new JLabel("条件设置");
+		lChoose.setBounds(10, 10, 54, 15);
+		panelSet.add(lChoose);
 		
-		JCheckBox checkBox_1 = new JCheckBox("\u73B0\u4EF7");
-		checkBox_1.setBounds(10, 161, 103, 23);
-		frame.getContentPane().add(checkBox_1);
+		JPanel pUpDown = new JPanel();
+		pUpDown.setBounds(0, 35, 220, 95);
+		panelSet.add(pUpDown);
+		pUpDown.setLayout(null);
 		
-		JCheckBox checkBox_2 = new JCheckBox("\u5E02\u76C8\u7387");
-		checkBox_2.setBounds(10, 291, 103, 23);
-		frame.getContentPane().add(checkBox_2);
+		JLabel lupdown = new JLabel("涨跌幅度");
+		lupdown.setBounds(0, 10, 84, 15);
+		pUpDown.add(lupdown);
 		
-		JCheckBox checkBox_3 = new JCheckBox("\u9884\u6D4B\u5E02\u76C8\u7387");
-		checkBox_3.setBounds(10, 417, 103, 23);
-		frame.getContentPane().add(checkBox_3);
+		JMin[0] = new JLabel("最小值");
+		JMin[0].setBounds(50, 35, 65, 15);
+		pUpDown.add(JMin[0]);
 		
-		JCheckBox checkBox_4 = new JCheckBox("\u5E02\u51C0\u7387");
-		checkBox_4.setBounds(10, 535, 103, 23);
-		frame.getContentPane().add(checkBox_4);
+		JMax[0] = new JLabel("最大值");
+		JMax[0].setBounds(50, 65, 65, 15);
+		pUpDown.add(JMax[0]);
 		
-		JLabel label = new JLabel("\u8303\u56F4");
-		label.setForeground(Color.GRAY);
-		label.setFont(new Font("宋体", Font.PLAIN, 13));
-		label.setBounds(10, 77, 63, 15);
-		frame.getContentPane().add(label);
+		JLabel label_4 = new JLabel("范围");
+		label_4.setBounds(0, 35, 54, 15);
+		pUpDown.add(label_4);
 		
-		JLabel label_1 = new JLabel("\u8303\u56F4");
-		label_1.setForeground(Color.GRAY);
-		label_1.setFont(new Font("宋体", Font.PLAIN, 13));
-		label_1.setBounds(10, 190, 63, 15);
-		frame.getContentPane().add(label_1);
+		MintextField[0] = new JTextField();
+		MintextField[0].setBounds(115, 35, 74, 18);
+		pUpDown.add(MintextField[0]);
+		MintextField[0].setColumns(10);
 		
-		JLabel label_2 = new JLabel("\u8303\u56F4");
-		label_2.setForeground(Color.GRAY);
-		label_2.setFont(new Font("宋体", Font.PLAIN, 13));
-		label_2.setBounds(10, 320, 63, 15);
-		frame.getContentPane().add(label_2);
+		MaxtextFied[0] = new JTextField();
+		MaxtextFied[0].setBounds(115, 65, 74, 18);
+		pUpDown.add(MaxtextFied[0]);
+		MaxtextFied[0].setColumns(10);
 		
-		JLabel label_3 = new JLabel("\u8303\u56F4");
-		label_3.setForeground(Color.GRAY);
-		label_3.setFont(new Font("宋体", Font.PLAIN, 13));
-		label_3.setBounds(10, 446, 63, 15);
-		frame.getContentPane().add(label_3);
+		JLabel lDelect1 = new JLabel("删除");
+		lDelect1.setForeground(Color.BLUE);
+		lDelect1.setBounds(0, 82, 54, 15);
+		pUpDown.add(lDelect1);
 		
-		JLabel label_4 = new JLabel("\u8303\u56F4");
-		label_4.setForeground(Color.GRAY);
-		label_4.setFont(new Font("宋体", Font.PLAIN, 13));
-		label_4.setBounds(10, 564, 63, 15);
-		frame.getContentPane().add(label_4);
+		JPanel pPrice = new JPanel();
+		pPrice.setLayout(null);
+		pPrice.setBounds(0, 130, 220, 95);
+		panelSet.add(pPrice);
 		
-		JLabel minlabel1 = new JLabel("\u6700\u5C0F\u503C");
-		minlabel1.setBounds(10, 97, 54, 15);
-		frame.getContentPane().add(minlabel1);
+		JLabel lPrice = new JLabel("现价");
+		lPrice.setBounds(0, 10, 84, 15);
+		pPrice.add(lPrice);
 		
-		JLabel maxlabel1 = new JLabel("\u6700\u5927\u503C");
-		maxlabel1.setBounds(10, 122, 54, 15);
-		frame.getContentPane().add(maxlabel1);
+		JMin[1] = new JLabel("最小值");
+		JMin[1].setBounds(50, 35, 65, 15);
+		pPrice.add(JMin[1]);
 		
-		mintextField1 = new JTextField();
-		mintextField1.setBounds(61, 94, 73, 21);
-		frame.getContentPane().add(mintextField1);
-		mintextField1.setColumns(10);
+		JMax[1] = new JLabel("最大值");
+		JMax[1].setBounds(50, 65, 65, 15);
+		pPrice.add(JMax[1]);
 		
-		maxtextField1 = new JTextField();
-		maxtextField1.setColumns(10);
-		maxtextField1.setBounds(61, 122, 73, 21);
-		frame.getContentPane().add(maxtextField1);
+		JLabel label_8 = new JLabel("范围");
+		label_8.setBounds(0, 35, 54, 15);
+		pPrice.add(label_8);
 		
-		JLabel minlabel2 = new JLabel("\u6700\u5C0F\u503C");
-		minlabel2.setBounds(10, 221, 54, 15);
-		frame.getContentPane().add(minlabel2);
+		MintextField[1] = new JTextField();
+		MintextField[1].setColumns(10);
+		MintextField[1].setBounds(115, 35, 74, 18);
+		pPrice.add(MintextField[1]);
 		
-		JLabel maxlabel2 = new JLabel("\u6700\u5927\u503C");
-		maxlabel2.setBounds(10, 246, 54, 15);
-		frame.getContentPane().add(maxlabel2);
+		MaxtextFied[1] = new JTextField();
+		MaxtextFied[1].setColumns(10);
+		MaxtextFied[1].setBounds(115, 65, 74, 18);
+		pPrice.add(MaxtextFied[1]);
 		
-		mintextField2 = new JTextField();
-		mintextField2.setColumns(10);
-		mintextField2.setBounds(61, 215, 73, 21);
-		frame.getContentPane().add(mintextField2);
+		JLabel lDelect2 = new JLabel("删除");
+		lDelect2.setForeground(Color.BLUE);
+		lDelect2.setBounds(0, 81, 54, 15);
+		pPrice.add(lDelect2);
 		
-		maxtextField2 = new JTextField();
-		maxtextField2.setColumns(10);
-		maxtextField2.setBounds(61, 243, 73, 21);
-		frame.getContentPane().add(maxtextField2);
+		JPanel pProfit = new JPanel();
+		pProfit.setLayout(null);
+		pProfit.setBounds(0, 226, 220, 95);
+		panelSet.add(pProfit);
 		
-		JLabel minlabel3 = new JLabel("\u6700\u5C0F\u503C");
-		minlabel3.setBounds(10, 348, 54, 15);
-		frame.getContentPane().add(minlabel3);
+		JLabel lProfit = new JLabel("市盈率");
+		lProfit.setBounds(0, 10, 84, 15);
+		pProfit.add(lProfit);
 		
-		mintextField3 = new JTextField();
-		mintextField3.setColumns(10);
-		mintextField3.setBounds(61, 345, 73, 21);
-		frame.getContentPane().add(mintextField3);
+		JMin[2] = new JLabel("最小值");
+		JMin[2].setBounds(50, 35, 65, 15);
+		pProfit.add(JMin[2]);
 		
-		JLabel maxlabel3 = new JLabel("\u6700\u5927\u503C");
-		maxlabel3.setBounds(10, 373, 54, 15);
-		frame.getContentPane().add(maxlabel3);
+		JMax[2] = new JLabel("最大值");
+		JMax[2].setBounds(50, 65, 65, 15);
+		pProfit.add(JMax[2]);
 		
-		maxtextField3 = new JTextField();
-		maxtextField3.setColumns(10);
-		maxtextField3.setBounds(61, 373, 73, 21);
-		frame.getContentPane().add(maxtextField3);
+		JLabel label_12 = new JLabel("范围");
+		label_12.setBounds(0, 35, 54, 15);
+		pProfit.add(label_12);
 		
-		JLabel minlabel4 = new JLabel("\u6700\u5C0F\u503C");
-		minlabel4.setBounds(10, 467, 54, 15);
-		frame.getContentPane().add(minlabel4);
+		MintextField[2] = new JTextField();
+		MintextField[2].setColumns(10);
+		MintextField[2].setBounds(115, 35, 74, 18);
+		pProfit.add(MintextField[2]);
 		
-		JLabel maxlabel4 = new JLabel("\u6700\u5927\u503C");
-		maxlabel4.setBounds(10, 495, 54, 15);
-		frame.getContentPane().add(maxlabel4);
+		MaxtextFied[2] = new JTextField();
+		MaxtextFied[2].setColumns(10);
+		MaxtextFied[2].setBounds(115, 65, 74, 18);
+		pProfit.add(MaxtextFied[2]);
 		
-		mintextField4 = new JTextField();
-		mintextField4.setColumns(10);
-		mintextField4.setBounds(61, 464, 73, 21);
-		frame.getContentPane().add(mintextField4);
+		JLabel lDelect3 = new JLabel("删除");
+		lDelect3.setForeground(Color.BLUE);
+		lDelect3.setBounds(0, 81, 54, 15);
+		pProfit.add(lDelect3);
 		
-		maxtextField4 = new JTextField();
-		maxtextField4.setColumns(10);
-		maxtextField4.setBounds(61, 492, 73, 21);
-		frame.getContentPane().add(maxtextField4);
+		JPanel pPreProfit = new JPanel();
+		pPreProfit.setLayout(null);
+		pPreProfit.setBounds(0, 320, 220, 95);
+		panelSet.add(pPreProfit);
 		
-		JLabel minlabel5 = new JLabel("\u6700\u5C0F\u503C");
-		minlabel5.setBounds(10, 589, 54, 15);
-		frame.getContentPane().add(minlabel5);
+		JLabel lpreProfit = new JLabel("预测市盈率");
+		lpreProfit.setBounds(0, 10, 84, 15);
+		pPreProfit.add(lpreProfit);
 		
-		JLabel maxlabel5 = new JLabel("\u6700\u5927\u503C");
-		maxlabel5.setBounds(10, 620, 54, 15);
-		frame.getContentPane().add(maxlabel5);
+		JMin[3] = new JLabel("最小值");
+		JMin[3].setBounds(50, 35, 65, 15);
+		pPreProfit.add(JMin[3]);
 		
-		mintextField5 = new JTextField();
-		mintextField5.setColumns(10);
-		mintextField5.setBounds(61, 589, 73, 21);
-		frame.getContentPane().add(mintextField5);
+		JMax[3] = new JLabel("最大值");
+		JMax[3].setBounds(50, 65, 65, 15);
+		pPreProfit.add(JMax[3]);
 		
-		maxtextField5 = new JTextField();
-		maxtextField5.setColumns(10);
-		maxtextField5.setBounds(61, 617, 73, 21);
-		frame.getContentPane().add(maxtextField5);
+		JLabel label_16 = new JLabel("范围");
+		label_16.setBounds(0, 35, 54, 15);
+		pPreProfit.add(label_16);
 		
+		MintextField[3] = new JTextField();
+		MintextField[3].setColumns(10);
+		MintextField[3].setBounds(115, 35, 74, 18);
+		pPreProfit.add(MintextField[3]);
 		
+		MaxtextFied[3] = new JTextField();
+		MaxtextFied[3].setColumns(10);
+		MaxtextFied[3].setBounds(115, 65, 74, 18);
+		pPreProfit.add(MaxtextFied[3]);
 		
-		JButton selectBtn = new JButton("\u6761\u4EF6\u641C\u7D22");
-		selectBtn.setBounds(582, 613, 93, 23);
-		frame.getContentPane().add(selectBtn);
+		JLabel lDelect4 = new JLabel("删除");
+		lDelect4.setForeground(Color.BLUE);
+		lDelect4.setBounds(0, 81, 54, 15);
+		pPreProfit.add(lDelect4);
 		
-		JButton collectBtn = new JButton("\u6536\u85CF");
-		collectBtn.setBounds(690, 613, 93, 23);
-		frame.getContentPane().add(collectBtn);
-		Object[][] Info={
-				{"00607.SZ","abc","5.203","16.58","17590.61","147.59","13.37"},		
-				{"00607.SZ","abc","5.203","16.58","17590.61","147.59","13.37"},
-		};
-		String[] Names={"股票代码","股票简称","涨跌幅","现价","市盈率","预测市盈率","市净率"};
-		//frame.getContentPane().add(sp);
+		JPanel pPureProfit = new JPanel();
+		pPureProfit.setLayout(null);
+		pPureProfit.setBounds(0, 416, 220, 95);
+		panelSet.add(pPureProfit);
 		
-		table = new JTable(Info,Names);
-		//JScrollPane sp = new JScrollPane(table);
-		table.setBounds(152, 54, 631, 550);
-		//table.setPreferredScrollableViewportSize(new Dimension(550,30));
+		JLabel lPureProfit = new JLabel("市净率");
+		lPureProfit.setBounds(0, 10, 84, 15);
+		pPureProfit.add(lPureProfit);
+		
+		JMin[4] = new JLabel("最小值");
+		JMin[4].setBounds(50, 35, 65, 15);
+		pPureProfit.add(JMin[4]);
+		
+		JMax[4] = new JLabel("最大值");
+		JMax[4].setBounds(50, 65, 65, 15);
+		pPureProfit.add(JMax[4]);
+		
+		JLabel label_20 = new JLabel("范围");
+		label_20.setBounds(0, 38, 54, 15);
+		pPureProfit.add(label_20);
+		
+		MintextField[4] = new JTextField();
+		MintextField[4].setColumns(10);
+		MintextField[4].setBounds(115, 35, 74, 18);
+		pPureProfit.add(MintextField[4]);
+		
+		MaxtextFied[4] = new JTextField();
+		MaxtextFied[4].setColumns(10);
+		MaxtextFied[4].setBounds(115, 65, 74, 18);
+		pPureProfit.add(MaxtextFied[4]);
+		
+		JLabel lDelect5 = new JLabel("删除");
+		lDelect5.setForeground(Color.BLUE);
+		lDelect5.setBounds(0, 81, 54, 15);
+		pPureProfit.add(lDelect5);
+		
+		table = new createTable(total,stockData);
+		table.setBounds(241,43,490,510);
 		frame.getContentPane().add(table);
+		
+		searchBtn = new JButton("搜索");
+		searchBtn.setBounds(83, 563, 63, 23);
+		frame.getContentPane().add(searchBtn);
+		
+		JLabel lblNewLabel = new JLabel("搜索股票数");
+		lblNewLabel.setBounds(10, 538, 82, 15);
+		frame.getContentPane().add(lblNewLabel);
+		
+		lstocknum = new JLabel("未知");
+		lstocknum.setBounds(83, 538, 54, 15);
+		frame.getContentPane().add(lstocknum);
+		
+		resetBtn = new JButton("重置");
+		resetBtn.setBounds(10, 563, 63, 23);
+		frame.getContentPane().add(resetBtn);
+		searchBtn.addMouseListener(handler);
+		resetBtn.addMouseListener(handler);
+		
+		frame.setTitle("帮我选股票");
+	}
+	
+	private class MouseHandler extends MouseAdapter
+	{
+		public  void mouseClicked(MouseEvent e)
+		{
+			if(e.getSource() == searchBtn)
+			{
+				int[] num = new int[6];
+				double[] Max = new double[6],Min = new double[6];
+				int Total = 0;
+			
+				for(int i = 0;i < 5;i++)
+				{
+					try{
+						double maxx = Double.parseDouble(MaxtextFied[i].getText());
+						System.out.println(MaxtextFied[i].getText());
+						double minn = Double.parseDouble(MintextField[i].getText());
+						System.out.println(MintextField[i].getText());
+						num[Total] = i;
+						Max[Total] = maxx;
+						Min[Total] = minn;
+						Total++;
+					}catch(Exception en)
+					{
+						System.out.println("第"+i+"列");
+					   //如果有异常 ， s 字符串就不是一个double
+					}
+				}
+				if(Total > 0)
+				{
+					
+				}
+				
+			}
+			else if(e.getSource() == resetBtn)
+			{
+				for(int i = 0;i < 5;i++)
+				{
+					MaxtextFied[i].setText("");
+					MintextField[i].setText("");
+				}
+			
+				
+			}
+		}
 	}
 }
