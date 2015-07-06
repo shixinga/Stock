@@ -7,12 +7,12 @@ import java.util.Vector;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ui.stockSift;
+import com.ui.StockSift;
 
 public class stockSifttest {
 	String[][] stockdata;
 	int total,stotal;
-	stockSift stocksift=new stockSift();
+	StockSift stocksift=new StockSift();
     int[] num;
     double[] max,min;
     Vector<Double> MaxMin;
